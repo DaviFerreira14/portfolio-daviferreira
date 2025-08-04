@@ -1,0 +1,243 @@
+.projects-section {
+  padding: 100px 0;
+  background: var(--bg-primary);
+}
+
+.section-header {
+  margin-bottom: 60px;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.section-divider {
+  width: 80px;
+  height: 4px;
+  background: #4a90e2;
+  margin: 0 auto 1.5rem;
+  border-radius: 2px;
+}
+
+.section-subtitle {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.project-card {
+  background: var(--bg-secondary);
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  height: 100%;
+  cursor: pointer;
+}
+
+.project-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.project-image {
+  position: relative;
+  overflow: hidden;
+  height: 250px;
+  cursor: pointer;
+}
+
+.project-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.project-card:hover .project-image img {
+  transform: scale(1.05);
+}
+
+.project-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.project-card:hover .project-overlay {
+  opacity: 1;
+}
+
+.overlay-content {
+  text-align: center;
+  color: white;
+}
+
+.preview-btn {
+  margin-bottom: 0.5rem;
+  animation: pulse 2s infinite;
+}
+
+.overlay-text {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin: 0;
+}
+
+.project-content {
+  padding: 1.5rem;
+}
+
+.project-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.project-description {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.project-technologies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.tech-badge {
+  padding: 0.3rem 0.8rem;
+  background: var(--accent-color);
+  color: white;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.tech-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(74, 144, 226, 0.3);
+}
+
+.project-actions {
+  display: none;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 25px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #4a90e2;
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+  color: white;
+}
+
+.btn-outline-primary {
+  border: 2px solid var(--accent-color);
+  color: var(--accent-color);
+  background: transparent;
+}
+
+.btn-outline-primary:hover {
+  background: var(--accent-color);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.project-image img {
+  background: #4a90e2;
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+.project-image img[src] {
+  animation: none;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.dark-theme .tech-badge {
+  background: rgba(74, 144, 226, 0.2);
+  border: 1px solid rgba(74, 144, 226, 0.3);
+}
+
+.dark-theme .project-image img {
+  background: #4a90e2;
+}
+
+.light-theme .tech-badge {
+  background: rgba(0, 123, 255, 0.1);
+  color: #007bff;
+  border: 1px solid rgba(0, 123, 255, 0.2);
+}
+
+@media (max-width: 768px) {
+  .projects-section {
+    padding: 80px 0;
+  }
+
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .project-content {
+    padding: 1rem;
+  }
+
+  .project-title {
+    font-size: 1.2rem;
+  }
+
+  .project-image {
+    height: 200px;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

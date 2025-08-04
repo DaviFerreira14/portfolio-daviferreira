@@ -1,0 +1,120 @@
+<section id="contact" class="contact-section">
+  <div class="container">
+    <div class="section-header text-center mb-5">
+      <h2 class="section-title">Contato</h2>
+      <div class="section-divider"></div>
+      <p class="section-subtitle">
+        Fale comigo! Estou disponível para projetos, parcerias ou um bate-papo sobre tecnologia.
+      </p>
+    </div>
+    
+    <div class="row">
+      <div class="col-lg-6 mb-4">
+        <div class="contact-info">
+          <h3>Informações de Contato</h3>
+          <p class="mb-4">
+            Email: <a href="javascript:void(0)" (click)="openEmail()" style="cursor: pointer;">davi073ferreira&#64;gmail.com</a><br>
+            WhatsApp: <a href="https://wa.me/5571992390166" target="_blank">(71) 99239-0166</a>
+          </p>
+          <p>
+            Ou envie uma mensagem pelo formulário ao lado e responderei o mais breve possível.
+          </p>
+          
+          <div class="contact-buttons mt-4">
+            <a href="https://wa.me/5571992390166" target="_blank" class="btn btn-success me-3">
+              <i class="bi bi-whatsapp"></i> WhatsApp
+            </a>
+            <button type="button" (click)="openEmail()" class="btn btn-outline-primary">
+              <i class="bi bi-envelope"></i> Email
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-6">
+        <div class="contact-form">
+          <form (ngSubmit)="onSubmit()" #contactForm="ngForm">
+            <div class="mb-3">
+              <label for="name" class="form-label">Nome</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="name" 
+                name="name"
+                [(ngModel)]="formData.name"
+                required
+                placeholder="Seu nome completo"
+              >
+            </div>
+            
+            <div class="mb-3">
+              <label for="email" class="form-label">E-mail</label>
+              <input 
+                type="email" 
+                class="form-control" 
+                id="email" 
+                name="email"
+                [(ngModel)]="formData.email"
+                required
+                placeholder="seu&#64;email.com"
+              >
+            </div>
+            
+            <div class="mb-3">
+              <label for="message" class="form-label">Mensagem</label>
+              <textarea 
+                class="form-control" 
+                id="message" 
+                name="message"
+                [(ngModel)]="formData.message"
+                rows="5"
+                required
+                placeholder="Digite sua mensagem..."
+              ></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" [disabled]="!contactForm.form.valid || isSubmitting">
+              <span *ngIf="!isSubmitting">
+                <i class="bi bi-send"></i> Enviar Mensagem
+              </span>
+              <span *ngIf="isSubmitting">
+                <i class="bi bi-hourglass-split"></i> Enviando...
+              </span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Notificação -->
+  <div 
+    class="modal-overlay" 
+    *ngIf="showModal" 
+    (click)="onModalBackdropClick($event)"
+    [class.dark-theme]="isDarkTheme"
+  >
+    <div class="modal-content" [class.modal-success]="modalType === 'success'" [class.modal-error]="modalType === 'error'">
+      <div class="modal-header">
+        <div class="modal-icon">
+          <i *ngIf="modalType === 'success'" class="bi bi-check-circle-fill"></i>
+          <i *ngIf="modalType === 'error'" class="bi bi-exclamation-triangle-fill"></i>
+        </div>
+        <h3 class="modal-title">{{ modalTitle }}</h3>
+        <button type="button" class="modal-close" (click)="closeModal()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <p>{{ modalMessage }}</p>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="closeModal()">
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
+</section> 

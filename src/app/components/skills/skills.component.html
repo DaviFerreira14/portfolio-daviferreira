@@ -1,0 +1,72 @@
+<section id="skills" class="skills-section">
+  <div class="container">
+    <div class="section-header text-center mb-5">
+      <h2 class="section-title">Habilidades Técnicas</h2>
+      <div class="section-divider"></div>
+      <p class="section-subtitle">
+        Tenho conhecimento em diversas tecnologias, linguagens e ferramentas, aplicando o que é mais adequado para cada projeto.
+      </p>
+    </div>
+    
+    <div class="skills-grid">
+      <div class="row">
+        <div class="col-lg-3 col-md-6 mb-4" *ngFor="let category of skillCategories">
+          <div class="skill-category-card">
+            <div class="category-icon">
+              <i [class]="category.icon"></i>
+            </div>
+            <h3 class="category-title">{{ category.name }}</h3>
+            <div class="skills-list">
+              <div class="skill-item" *ngFor="let skill of category.skills">
+                <span class="skill-name">{{ skill }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="skills-highlight mt-5">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <div class="highlight-content">
+            <h3>Foco em Qualidade</h3>
+            <p>
+              Busco sempre aplicar as melhores práticas de desenvolvimento, 
+              garantindo código limpo, escalável e bem documentado.
+            </p>
+            <ul class="highlight-list">
+              <li><i class="bi bi-check-circle"></i> Código limpo e bem estruturado</li>
+              <li><i class="bi bi-check-circle"></i> Responsividade e acessibilidade</li>
+              <li><i class="bi bi-check-circle"></i> Performance otimizada</li>
+              <li><i class="bi bi-check-circle"></i> Testes e documentação</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="highlight-image">
+            <div class="code-preview">
+              <div class="code-header">
+                <span class="code-dot red"></span>
+                <span class="code-dot yellow"></span>
+                <span class="code-dot green"></span>
+              </div>
+              <div class="code-content">
+                                   <pre><code>function createUser(userData) &#123;
+  const user = &#123;
+    id: generateId(),
+    name: userData.name,
+    email: userData.email,
+    createdAt: new Date()
+  &#125;;
+  
+  return user;
+&#125;</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> 

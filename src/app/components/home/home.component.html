@@ -1,0 +1,69 @@
+<section id="home" class="home-section">
+  <div class="container">
+    <div class="row align-items-center min-vh-100">
+      <div class="col-lg-6">
+        <!-- Conteúdo da esquerda -->
+        <div class="home-content">
+          <h1 class="name-title">
+            <span class="name">{{ profile.name }}</span>
+          </h1>
+          
+          <h2 class="profession">
+            <span class="typing-text">{{ profile.profession }}</span>
+          </h2>
+          
+          <p class="description">
+            Desenvolvedor Full Stack, Analista de Sistemas e Programador especializado em Angular, Node.js e React. 
+            Transformo ideias em interfaces modernas, acessíveis e funcionais.
+          </p>
+          
+          <div class="cta-buttons">
+            <a href="#projects" class="btn btn-primary">
+              <i class="bi bi-folder2-open"></i>
+              Conheça meus projetos
+            </a>
+            <a href="#contact" class="btn btn-outline-primary">
+              <i class="bi bi-chat-dots"></i>
+              Entre em contato
+            </a>
+          </div>
+          
+          <div class="social-links">
+            <a href="https://www.linkedin.com/in/davi-ferreira99/" target="_blank" class="social-link">
+              <i class="bi bi-linkedin"></i>
+            </a>
+            <a href="https://github.com/DaviFerreira14" target="_blank" class="social-link">
+              <i class="bi bi-github"></i>
+            </a>
+            <a href="https://wa.me/5571992390166" target="_blank" class="social-link">
+              <i class="bi bi-whatsapp"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-6">
+        <!-- Foto do perfil -->
+        <div class="profile-container">
+          <div class="profile-image-wrapper">
+            <img 
+              [src]="profileImageUrl" 
+              [alt]="profile.name" 
+              class="profile-image"
+              (error)="onImageError($event)"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Scroll indicator -->
+  <div class="scroll-indicator">
+    <div class="scroll-text">Role para baixo</div>
+    <div class="scroll-arrow">
+      <i class="bi bi-chevron-down"></i>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,58 @@
+<section id="projects" class="projects-section">
+  <div class="container">
+    <div class="section-header text-center mb-5">
+      <h2 class="section-title">Projetos em Destaque</h2>
+      <div class="section-divider"></div>
+      <p class="section-subtitle">
+        Confira alguns dos projetos que desenvolvi recentemente. Cada um representa um desafio real
+        e uma oportunidade de aprendizado.
+      </p>
+    </div>
+    
+    <div class="projects-grid">
+      <div class="row">
+        <div class="col-lg-6 mb-4" *ngFor="let project of projects">
+          <div class="project-card">
+            <div class="project-image" (click)="openProject(project.link)">
+              <img 
+                [src]="project.image" 
+                [alt]="'Preview do projeto ' + project.title" 
+                class="img-fluid"
+                loading="lazy"
+              >
+              <div class="project-overlay">
+                <div class="overlay-content">
+                  <button class="btn btn-primary preview-btn" type="button">
+                    <i class="bi bi-box-arrow-up-right"></i> Visitar Site
+                  </button>
+                  <p class="overlay-text">Clique para abrir em nova aba</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="project-content">
+              <h3 class="project-title">{{ project.title }}</h3>
+              <p class="project-description">{{ project.description }}</p>
+              
+              <div class="project-technologies">
+                <span 
+                  class="tech-badge" 
+                  *ngFor="let tech of project.technologies"
+                >
+                  {{ tech }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="text-center mt-4">
+      <small class="text-muted">
+        <i class="bi bi-info-circle"></i>
+        Clique nos cards para visitar os projetos online
+      </small>
+    </div>
+  </div>
+</section>
