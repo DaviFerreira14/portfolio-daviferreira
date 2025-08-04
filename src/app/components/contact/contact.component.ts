@@ -52,7 +52,6 @@ export class ContactComponent {
             this.isSubmitting = false;
           },
           error: (error) => {
-            console.error('Erro ao enviar email:', error);
             this.showErrorModal('Erro ao enviar mensagem', 'Verifique se o servidor está rodando e tente novamente.');
             this.isSubmitting = false;
           }
@@ -73,9 +72,9 @@ export class ContactComponent {
     
     // Copiar email para área de transferência como backup
     navigator.clipboard.writeText(email).then(() => {
-      console.log('Email copiado para área de transferência como backup');
+      // Email copiado com sucesso
     }).catch(() => {
-      console.log('Não foi possível copiar email para área de transferência');
+      // Falha ao copiar email
     });
   }
 

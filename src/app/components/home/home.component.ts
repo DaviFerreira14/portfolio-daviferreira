@@ -27,7 +27,7 @@ export class HomeComponent {
   }
 
   onImageError(event: any): void {
-    console.log('Erro ao carregar imagem do GitHub, usando placeholder');
+    
     event.target.src = 'assets/images/profile-placeholder.jpg';
   }
 }

@@ -14,8 +14,8 @@ app.use(express.json());
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: process.env.EMAIL_USER, // davi073ferreira@gmail.com
-    pass: process.env.EMAIL_PASS  // Senha de app do Gmail
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
   }
 });
 
@@ -251,7 +251,6 @@ app.post('/api/send-email', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Erro ao enviar email:', error);
     res.status(500).json({ 
       success: false, 
       message: 'Erro ao enviar email. Tente novamente.' 
@@ -265,5 +264,5 @@ app.get('/api/test', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+  // Servidor iniciado com sucesso
 }); 
