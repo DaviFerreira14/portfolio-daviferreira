@@ -1,49 +1,7 @@
-const express = require('express');
-const cors = require('cors');
 const nodemailer = require('nodemailer');
-require('dotenv').config();
-
-const app = express();
-const PORT = process.env.PORT || 3001;
-
-// Configuração de CORS mais robusta
-const allowedOrigins = [
-  'https://portfolio-daviferreira.vercel.app',
-  'https://portfolio-davi-ferreira.vercel.app',
-  'http://localhost:4200',
-  'http://localhost:3000'
-];
-
-// Middleware CORS customizado
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  
-  // Permitir requisições sem origin
-  if (!origin) {
-    return next();
-  }
-  
-  // Verificar se a origem é permitida
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
-  
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  
-  // Responder imediatamente para requisições OPTIONS
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-  
-  next();
-});
-
-app.use(express.json());
 
 // Configuração do transporter do Nodemailer
-const transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransporter({
   service: 'gmail',
   auth: {
     user: process.env.EMAIL_USER,
@@ -51,14 +9,39 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// Rota para enviar email
-app.post('/api/send-email', async (req, res) => {
-  // Adicionar headers CORS para esta rota específica
+// Domínios permitidos
+const allowedOrigins = [
+  'https://portfolio-daviferreira.vercel.app',
+  'https://portfolio-davi-ferreira.vercel.app',
+  'http://localhost:4200',
+  'http://localhost:3000'
+];
+
+module.exports = async (req, res) => {
+  // Configuração de CORS
   const origin = req.headers.origin;
+  
   if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Origin', origin);
   }
-  res.header('Access-Control-Allow-Credentials', 'true');
+  
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Max-Age', '86400');
+  
+  // Responder a requisições OPTIONS
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
+  // Apenas aceitar requisições POST
+  if (req.method !== 'POST') {
+    return res.status(405).json({ 
+      success: false, 
+      message: 'Método não permitido' 
+    });
+  }
   
   try {
     const { name, email, message } = req.body;
@@ -290,62 +273,10 @@ app.post('/api/send-email', async (req, res) => {
     });
 
   } catch (error) {
+    console.error('Erro ao enviar email:', error);
     res.status(500).json({ 
       success: false, 
       message: 'Erro ao enviar email. Tente novamente.' 
     });
   }
-});
-
-// Rota de teste
-app.get('/api/test', (req, res) => {
-  // Adicionar headers CORS para esta rota específica
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
-  res.header('Access-Control-Allow-Credentials', 'true');
-  
-  res.json({ 
-    message: 'Backend funcionando!',
-    timestamp: new Date().toISOString(),
-    cors: 'Configurado corretamente',
-    allowedOrigins: allowedOrigins
-  });
-});
-
-// Rota para verificar CORS
-app.options('/api/send-email', (req, res) => {
-  const origin = req.headers.origin;
-  
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
-  
-  res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Max-Age', '86400'); // 24 horas
-  
-  res.status(200).end();
-});
-
-// Rota OPTIONS genérica para todas as rotas da API
-app.options('/api/*', (req, res) => {
-  const origin = req.headers.origin;
-  
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
-  
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Max-Age', '86400'); // 24 horas
-  
-  res.status(200).end();
-});
-
-app.listen(PORT, () => {
-  // Servidor iniciado com sucesso
-}); 
+}; 
