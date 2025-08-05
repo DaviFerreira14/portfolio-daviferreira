@@ -7,8 +7,42 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(cors());
+const allowedOrigins = [
+  'https://portfolio-daviferreira.vercel.app',
+  'https://portfolio-davi-ferreira.vercel.app',
+  'http://localhost:4200',
+  'http://localhost:3000'
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Permitir requisições sem origin (como mobile apps ou Postman)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Não permitido pelo CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+
 app.use(express.json());
+
+// Middleware para lidar com erros de CORS
+app.use((err, req, res, next) => {
+  if (err.message === 'Não permitido pelo CORS') {
+    return res.status(403).json({
+      success: false,
+      message: 'Origem não permitida pelo CORS',
+      allowedOrigins: allowedOrigins
+    });
+  }
+  next(err);
+});
 
 // Configuração do transporter do Nodemailer
 const transporter = nodemailer.createTransport({
@@ -260,7 +294,16 @@ app.post('/api/send-email', async (req, res) => {
 
 // Rota de teste
 app.get('/api/test', (req, res) => {
-  res.json({ message: 'Backend funcionando!' });
+  res.json({ 
+    message: 'Backend funcionando!',
+    timestamp: new Date().toISOString(),
+    cors: 'Configurado corretamente'
+  });
+});
+
+// Rota para verificar CORS
+app.options('/api/send-email', (req, res) => {
+  res.status(200).end();
 });
 
 app.listen(PORT, () => {
