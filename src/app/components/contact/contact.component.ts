@@ -2,6 +2,7 @@ import { Component, Input, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../config/environment';
 
 @Component({
   selector: 'app-contact',
@@ -34,7 +35,7 @@ export class ContactComponent {
       this.isSubmitting = true;
       
       // Enviar dados para o backend
-      this.http.post('http://localhost:3001/api/send-email', this.formData)
+      this.http.post(`${environment.apiUrl}/send-email`, this.formData)
         .subscribe({
           next: (response: any) => {
             if (response.success) {
