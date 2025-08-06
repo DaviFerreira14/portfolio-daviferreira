@@ -37,5 +37,8 @@
     "@angular/cli": "^20.0.5",
     "@angular/compiler-cli": "^20.0.0",
     "typescript": "~5.8.2"
+  },
+  "vercel": {
+    "outputDirectory": "dist/portfolio-davi-ferreira/browser"
   }
 }
