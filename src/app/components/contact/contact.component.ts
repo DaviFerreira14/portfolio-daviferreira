@@ -34,7 +34,7 @@ export class ContactComponent {
     if (this.formData.name && this.formData.email && this.formData.message) {
       this.isSubmitting = true;
       
-      // Enviar dados para o backend
+      // Enviar dados para o backend no Vercel
       this.http.post(`${environment.apiUrl}/send-email`, this.formData)
         .subscribe({
           next: (response: any) => {
