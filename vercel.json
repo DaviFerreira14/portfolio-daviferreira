@@ -5,15 +5,14 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist/portfolio-davi-ferreira/browser",
-        "buildCommand": "npm run build"
+        "distDir": "dist/portfolio-davi-ferreira/browser"
       }
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
