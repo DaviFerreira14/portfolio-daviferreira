@@ -63,3 +63,5 @@ Thumbs.db
 
 # Documentation files (keep local only)
 *.md
+
+.vercel

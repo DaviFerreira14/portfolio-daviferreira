@@ -8,20 +8,26 @@ const allowedOrigins = [
   'http://localhost:3000'
 ];
 
-module.exports = async (req, res) => {
-  // Configuração de CORS
+// Função para configurar CORS
+const setCORSHeaders = (req, res) => {
   const origin = req.headers.origin;
   
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
+  // Permitir origens específicas ou todas se não houver origin (Postman, etc.)
+  if (!origin || allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin || '*');
   }
   
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Max-Age', '86400');
+};
+
+module.exports = async (req, res) => {
+  // Configurar CORS
+  setCORSHeaders(req, res);
   
-  // Responder a requisições OPTIONS
+  // Responder a requisições OPTIONS (preflight)
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
@@ -30,17 +36,23 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ 
       success: false, 
-      message: 'Método não permitido' 
+      message: 'Método não permitido. Use POST.' 
     });
   }
   
   try {
+    console.log('Iniciando processo de envio de email...');
+    console.log('Body recebido:', req.body);
+    
     // Verificar se as variáveis de ambiente existem
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.error('Variáveis de ambiente não encontradas');
+      console.error('Variáveis de ambiente não encontradas:', {
+        EMAIL_USER: !!process.env.EMAIL_USER,
+        EMAIL_PASS: !!process.env.EMAIL_PASS
+      });
       return res.status(500).json({ 
         success: false, 
-        message: 'Configuração de email não encontrada' 
+        message: 'Configuração de email não encontrada no servidor' 
       });
     }
 
@@ -48,28 +60,46 @@ module.exports = async (req, res) => {
 
     // Validação dos campos
     if (!name || !email || !message) {
+      console.log('Campos obrigatórios faltando:', { name: !!name, email: !!email, message: !!message });
       return res.status(400).json({ 
         success: false, 
-        message: 'Todos os campos são obrigatórios' 
+        message: 'Todos os campos são obrigatórios (nome, email, mensagem)' 
       });
     }
 
-    // Configuração do transporter do Nodemailer (CORRIGIDO)
-    const transporter = nodemailer.createTransport({
+    // Validação básica de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email inválido'
+      });
+    }
+
+    console.log('Criando transporter do nodemailer...');
+    
+    // Configuração do transporter do Nodemailer
+    const transporter = nodemailer.createTransporter({
       service: 'gmail',
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
+      },
+      tls: {
+        rejectUnauthorized: false
       }
     });
 
     // Verificar se o transporter está funcionando
+    console.log('Verificando conexão com o Gmail...');
     await transporter.verify();
+    console.log('Conexão com Gmail verificada com sucesso!');
 
     // Configuração do email
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from: `"Portfolio Contato" <${process.env.EMAIL_USER}>`,
       to: 'davi073ferreira@gmail.com',
+      replyTo: email,
       subject: `Novo contato via Portfolio - ${name}`,
       html: `
         <!DOCTYPE html>
@@ -102,7 +132,7 @@ module.exports = async (req, res) => {
             }
             
             .header {
-              background: #4a90e2;
+              background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
               color: white;
               padding: 30px;
               text-align: center;
@@ -153,6 +183,7 @@ module.exports = async (req, res) => {
             .contact-value {
               color: #212529;
               flex: 1;
+              word-break: break-word;
             }
             
             .message-section {
@@ -177,6 +208,7 @@ module.exports = async (req, res) => {
               border-left: 4px solid #4a90e2;
               line-height: 1.7;
               white-space: pre-wrap;
+              word-wrap: break-word;
             }
             
             .footer {
@@ -200,42 +232,13 @@ module.exports = async (req, res) => {
               color: #495057;
               font-weight: 500;
             }
-            
-            @media (max-width: 600px) {
-              .container {
-                margin: 10px;
-                border-radius: 8px;
-              }
-              
-              .header {
-                padding: 20px;
-              }
-              
-              .header h1 {
-                font-size: 24px;
-              }
-              
-              .content {
-                padding: 25px 20px;
-              }
-              
-              .contact-item {
-                flex-direction: column;
-                align-items: flex-start;
-              }
-              
-              .contact-label {
-                margin-bottom: 5px;
-                margin-right: 0;
-              }
-            }
           </style>
         </head>
         <body>
           <div class="container">
             <div class="header">
               <h1>📧 Novo Contato</h1>
-              <p>Alguém entrou em contato através do seu portfolio</p>
+              <p>Mensagem recebida através do seu portfolio</p>
             </div>
             
             <div class="content">
@@ -263,7 +266,8 @@ module.exports = async (req, res) => {
                   month: '2-digit', 
                   year: 'numeric',
                   hour: '2-digit',
-                  minute: '2-digit'
+                  minute: '2-digit',
+                  timeZone: 'America/Sao_Paulo'
                 })}</span>
               </p>
               <p style="margin-top: 10px; font-size: 12px; color: #adb5bd;">
@@ -273,17 +277,33 @@ module.exports = async (req, res) => {
           </div>
         </body>
         </html>
+      `,
+      // Versão em texto plano como fallback
+      text: `
+        Novo contato via Portfolio
+        
+        Nome: ${name}
+        Email: ${email}
+        
+        Mensagem:
+        ${message}
+        
+        Enviado em: ${new Date().toLocaleString('pt-BR')}
       `
     };
 
+    console.log('Enviando email...');
+    
     // Enviar email
     const result = await transporter.sendMail(mailOptions);
     
-    console.log('Email enviado com sucesso:', result.messageId);
+    console.log('Email enviado com sucesso! Message ID:', result.messageId);
 
-    res.json({ 
+    // Resposta de sucesso
+    return res.status(200).json({ 
       success: true, 
-      message: 'Email enviado com sucesso!' 
+      message: 'Email enviado com sucesso! Entrarei em contato em breve.',
+      messageId: result.messageId
     });
 
   } catch (error) {
@@ -294,9 +314,20 @@ module.exports = async (req, res) => {
       stack: error.stack
     });
     
-    res.status(500).json({ 
+    // Diferentes tipos de erro
+    let errorMessage = 'Erro interno do servidor. Tente novamente.';
+    
+    if (error.code === 'EAUTH') {
+      errorMessage = 'Erro de autenticação do email. Configuração incorreta.';
+    } else if (error.code === 'ENOTFOUND') {
+      errorMessage = 'Erro de conexão com o servidor de email.';
+    } else if (error.response && error.response.includes('550')) {
+      errorMessage = 'Email rejeitado pelo servidor.';
+    }
+    
+    return res.status(500).json({ 
       success: false, 
-      message: 'Erro ao enviar email. Tente novamente.',
+      message: errorMessage,
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
