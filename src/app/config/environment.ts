@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://portfolio-daviferreira.vercel.app/api'
+  apiUrl: 'https://backend-vercel-3jsdslvg6-daviferreira14s-projects.vercel.app/api'
 };
