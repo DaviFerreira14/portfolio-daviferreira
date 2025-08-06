@@ -1,21 +1,7 @@
 {
   "version": 2,
-  "functions": {
-    "api/send-email.js": {
-      "runtime": "nodejs18.x"
-    },
-    "api/test.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    }
-  ],
   "env": {
     "EMAIL_USER": "@email_user",
     "EMAIL_PASS": "@email_pass"
   }
-} 
+}

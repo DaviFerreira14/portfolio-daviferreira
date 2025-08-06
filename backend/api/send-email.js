@@ -1,14 +1,5 @@
 const nodemailer = require('nodemailer');
 
-// Configuração do transporter do Nodemailer
-const transporter = nodemailer.createTransporter({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
-
 // Domínios permitidos
 const allowedOrigins = [
   'https://portfolio-daviferreira.vercel.app',
@@ -44,6 +35,15 @@ module.exports = async (req, res) => {
   }
   
   try {
+    // Verificar se as variáveis de ambiente existem
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.error('Variáveis de ambiente não encontradas');
+      return res.status(500).json({ 
+        success: false, 
+        message: 'Configuração de email não encontrada' 
+      });
+    }
+
     const { name, email, message } = req.body;
 
     // Validação dos campos
@@ -53,6 +53,18 @@ module.exports = async (req, res) => {
         message: 'Todos os campos são obrigatórios' 
       });
     }
+
+    // Configuração do transporter do Nodemailer (CORRIGIDO)
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+
+    // Verificar se o transporter está funcionando
+    await transporter.verify();
 
     // Configuração do email
     const mailOptions = {
@@ -265,7 +277,9 @@ module.exports = async (req, res) => {
     };
 
     // Enviar email
-    await transporter.sendMail(mailOptions);
+    const result = await transporter.sendMail(mailOptions);
+    
+    console.log('Email enviado com sucesso:', result.messageId);
 
     res.json({ 
       success: true, 
@@ -273,10 +287,17 @@ module.exports = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Erro ao enviar email:', error);
+    console.error('Erro detalhado ao enviar email:', {
+      message: error.message,
+      code: error.code,
+      response: error.response,
+      stack: error.stack
+    });
+    
     res.status(500).json({ 
       success: false, 
-      message: 'Erro ao enviar email. Tente novamente.' 
+      message: 'Erro ao enviar email. Tente novamente.',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
-}; 
+};
