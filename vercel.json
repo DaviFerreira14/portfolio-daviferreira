@@ -1,5 +1,13 @@
 {
   "version": 2,
+  "functions": {
+    "api/send-email.js": {
+      "maxDuration": 30
+    },
+    "api/test.js": {
+      "maxDuration": 10
+    }
+  },
   "builds": [
     {
       "src": "package.json",
@@ -7,10 +15,6 @@
       "config": {
         "distDir": "dist/portfolio-davi-ferreira/browser"
       }
-    },
-    {
-      "src": "api/**/*.js",
-      "use": "@vercel/node"
     }
   ],
   "rewrites": [
