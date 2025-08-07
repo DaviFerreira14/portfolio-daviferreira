@@ -20,11 +20,15 @@ module.exports = async (req, res) => {
   }
   
   try {
-    console.log('Iniciando processo de envio de email...');
+    console.log('=== INÍCIO DO PROCESSO ===');
+    console.log('Environment variables:', {
+      EMAIL_USER: process.env.EMAIL_USER ? 'Definida' : 'Não definida',
+      EMAIL_PASS: process.env.EMAIL_PASS ? 'Definida' : 'Não definida'
+    });
     
     // Verificar se as variáveis de ambiente existem
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.error('Variáveis de ambiente não encontradas');
+      console.error('❌ Variáveis de ambiente não encontradas');
       return res.status(500).json({ 
         success: false, 
         message: 'Configuração de email não encontrada no servidor' 
@@ -32,23 +36,32 @@ module.exports = async (req, res) => {
     }
 
     const { name, email, message } = req.body;
+    console.log('Dados recebidos:', { name, email, message: message ? 'Presente' : 'Ausente' });
 
     // Validação dos campos
     if (!name || !email || !message) {
+      console.error('❌ Campos obrigatórios ausentes');
       return res.status(400).json({ 
         success: false, 
         message: 'Todos os campos são obrigatórios (nome, email, mensagem)' 
       });
     }
 
-    // Configuração do transporter do Nodemailer
+    console.log('✅ Validação passou, configurando transporter...');
+
+    // Configuração do transporter do Nodemailer com configuração mais robusta
     const transporter = nodemailer.createTransporter({
       service: 'gmail',
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
+      },
+      tls: {
+        rejectUnauthorized: false
       }
     });
+
+    console.log('✅ Transporter configurado, preparando email...');
 
     // Configuração do email
     const mailOptions = {
@@ -67,12 +80,12 @@ module.exports = async (req, res) => {
       `
     };
 
-    console.log('Enviando email...');
+    console.log('✅ Email preparado, enviando...');
     
     // Enviar email
     const result = await transporter.sendMail(mailOptions);
     
-    console.log('Email enviado com sucesso! Message ID:', result.messageId);
+    console.log('✅ Email enviado com sucesso! Message ID:', result.messageId);
 
     // Resposta de sucesso
     return res.status(200).json({ 
@@ -82,7 +95,8 @@ module.exports = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Erro ao enviar email:', error);
+    console.error('❌ Erro detalhado:', error);
+    console.error('❌ Stack trace:', error.stack);
     
     return res.status(500).json({ 
       success: false, 
