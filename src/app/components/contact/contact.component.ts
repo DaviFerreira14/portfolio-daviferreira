@@ -14,7 +14,10 @@ import { environment } from '../../config/environment';
 export class ContactComponent {
   @Input() isDarkTheme = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    // Debug: Mostrar a URL que está sendo usada
+    console.log('🔧 API URL configurada:', environment.apiUrl);
+  }
 
   formData = {
     name: '',
@@ -30,14 +33,33 @@ export class ContactComponent {
   modalMessage = '';
   modalType: 'success' | 'error' = 'success';
 
+  // Método para testar a API primeiro
+  testAPI() {
+    console.log('🧪 Testando API...');
+    this.http.get(`${environment.apiUrl}/test`)
+      .subscribe({
+        next: (response) => {
+          console.log('✅ API funcionando:', response);
+        },
+        error: (error) => {
+          console.error('❌ Erro na API:', error);
+          console.error('URL testada:', `${environment.apiUrl}/test`);
+        }
+      });
+  }
+
   onSubmit() {
     if (this.formData.name && this.formData.email && this.formData.message) {
       this.isSubmitting = true;
+      
+      console.log('📤 Enviando dados para:', `${environment.apiUrl}/send-email`);
+      console.log('📋 Dados:', this.formData);
       
       // Enviar dados para o backend no Vercel
       this.http.post(`${environment.apiUrl}/send-email`, this.formData)
         .subscribe({
           next: (response: any) => {
+            console.log('📨 Resposta recebida:', response);
             if (response.success) {
               this.showSuccessModal('Mensagem enviada com sucesso!', 'Entrarei em contato em breve.');
               
@@ -53,7 +75,22 @@ export class ContactComponent {
             this.isSubmitting = false;
           },
           error: (error) => {
-            this.showErrorModal('Erro ao enviar mensagem', 'Verifique se o servidor está rodando e tente novamente.');
+            console.error('💥 Erro completo:', error);
+            console.error('🔍 Status:', error.status);
+            console.error('🔍 Message:', error.message);
+            console.error('🔍 URL:', error.url);
+            
+            let errorMessage = 'Erro desconhecido.';
+            
+            if (error.status === 404) {
+              errorMessage = 'Endpoint não encontrado. Verifique a URL da API.';
+            } else if (error.status === 500) {
+              errorMessage = 'Erro interno do servidor. Verifique as configurações.';
+            } else if (error.status === 0) {
+              errorMessage = 'Erro de CORS ou conexão. Verifique se o servidor está rodando.';
+            }
+            
+            this.showErrorModal('Erro ao enviar mensagem', errorMessage);
             this.isSubmitting = false;
           }
         });
@@ -129,4 +166,4 @@ export class ContactComponent {
       this.closeModal();
     }
   }
-} 
+}
