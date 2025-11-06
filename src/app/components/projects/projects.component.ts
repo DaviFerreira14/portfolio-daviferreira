@@ -31,7 +31,7 @@ export class ProjectsComponent {
       title: 'W&W Climatização',
       description: 'Site institucional responsivo para empresa de climatização. Apresenta serviços, produtos e contato com visual moderno e acessível.',
       image: 'wew.png',
-      link: 'https://wewclimatizacao.com.br/',
+      link: 'https://wew-climatizacao.vercel.app/',
       technologies: ['HTML5', 'CSS3', 'JavaScript', 'Bootstrap']
     },
     {
