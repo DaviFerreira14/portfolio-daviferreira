@@ -1,4 +1,8 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://backend-vercel-ruddy-seven.vercel.app/api'
+  emailjs: {
+    serviceId: 'service_zwbzdss',
+    templateId: 'template_nxmvhuq',
+    publicKey: 'zmtUHsACznUz9h-Tu'
+  }
 };

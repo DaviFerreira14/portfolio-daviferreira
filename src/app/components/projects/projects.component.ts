@@ -21,6 +21,13 @@ export class ProjectsComponent {
 
   projects: Project[] = [
     {
+      title: 'Fundação Péricles Fernandes',
+      description: 'Site institucional da Fundação Péricles Fernandes, organização social que transforma vidas por meio de educação, cultura, esporte e cidadania.',
+      image: 'funpefer.jpg',
+      link: 'https://www.funpefer.org/',
+      technologies: ['Angular', 'TypeScript', 'Bootstrap']
+    },
+    {
       title: 'W&W Climatização',
       description: 'Site institucional responsivo para empresa de climatização. Apresenta serviços, produtos e contato com visual moderno e acessível.',
       image: 'wew.png',

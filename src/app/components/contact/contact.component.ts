@@ -1,8 +1,8 @@
 import { Component, Input, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { environment } from '../../config/environment';
+import emailjs from '@emailjs/browser';
 
 @Component({
   selector: 'app-contact',
@@ -14,9 +14,11 @@ import { environment } from '../../config/environment';
 export class ContactComponent {
   @Input() isDarkTheme = false;
 
-  constructor(private http: HttpClient) {
-    // Debug: Mostrar a URL que está sendo usada
-    console.log('🔧 API URL configurada:', environment.apiUrl);
+  constructor() {
+    // Inicializa o EmailJS com a public key
+    if (environment.emailjs?.publicKey) {
+      emailjs.init(environment.emailjs.publicKey);
+    }
   }
 
   formData = {
@@ -33,66 +35,44 @@ export class ContactComponent {
   modalMessage = '';
   modalType: 'success' | 'error' = 'success';
 
-  // Método para testar a API primeiro
-  testAPI() {
-    console.log('🧪 Testando API...');
-    this.http.get(`${environment.apiUrl}/test`)
-      .subscribe({
-        next: (response) => {
-          console.log('✅ API funcionando:', response);
-        },
-        error: (error) => {
-          console.error('❌ Erro na API:', error);
-          console.error('URL testada:', `${environment.apiUrl}/test`);
-        }
-      });
-  }
+  // EmailJS não requer teste de API; tudo acontece client-side
 
   onSubmit() {
     if (this.formData.name && this.formData.email && this.formData.message) {
       this.isSubmitting = true;
-      
-      console.log('📤 Enviando dados para:', `${environment.apiUrl}/send-email`);
-      console.log('📋 Dados:', this.formData);
-      
-      // Enviar dados para o backend no Vercel
-      this.http.post(`${environment.apiUrl}/send-email`, this.formData)
-        .subscribe({
-          next: (response: any) => {
-            console.log('📨 Resposta recebida:', response);
-            if (response.success) {
-              this.showSuccessModal('Mensagem enviada com sucesso!', 'Entrarei em contato em breve.');
-              
-              // Limpar formulário
-              this.formData = {
-                name: '',
-                email: '',
-                message: ''
-              };
-            } else {
-              this.showErrorModal('Erro ao enviar mensagem', response.message);
-            }
-            this.isSubmitting = false;
-          },
-          error: (error) => {
-            console.error('💥 Erro completo:', error);
-            console.error('🔍 Status:', error.status);
-            console.error('🔍 Message:', error.message);
-            console.error('🔍 URL:', error.url);
-            
-            let errorMessage = 'Erro desconhecido.';
-            
-            if (error.status === 404) {
-              errorMessage = 'Endpoint não encontrado. Verifique a URL da API.';
-            } else if (error.status === 500) {
-              errorMessage = 'Erro interno do servidor. Verifique as configurações.';
-            } else if (error.status === 0) {
-              errorMessage = 'Erro de CORS ou conexão. Verifique se o servidor está rodando.';
-            }
-            
-            this.showErrorModal('Erro ao enviar mensagem', errorMessage);
-            this.isSubmitting = false;
-          }
+
+      const { serviceId, templateId, publicKey } = environment.emailjs || {} as any;
+      if (!serviceId || !templateId || !publicKey) {
+        this.showErrorModal('Configuração ausente', 'Configure o EmailJS (serviceId, templateId e publicKey) em environment.ts.');
+        this.isSubmitting = false;
+        return;
+      }
+
+      const templateParams = {
+        // nome do remetente
+        from_name: this.formData.name,
+        // e-mail do remetente (alguns templates usam from_email)
+        from_email: this.formData.email,
+        // reply_to é recomendado pelo EmailJS para definir o campo Reply-To
+        reply_to: this.formData.email,
+        // nome do destinatário (opcional; não quebra se não usado)
+        to_name: 'Davi Ferreira',
+        // conteúdo da mensagem
+        message: this.formData.message,
+      };
+
+      emailjs
+        .send(serviceId, templateId, templateParams)
+        .then(() => {
+          this.showSuccessModal('Mensagem enviada com sucesso!', 'Entrarei em contato em breve.');
+          this.formData = { name: '', email: '', message: '' };
+          this.isSubmitting = false;
+        })
+        .catch((error: any) => {
+          console.error('Erro ao enviar com EmailJS:', error);
+          console.error('EmailJS status:', error?.status, 'texto:', error?.text);
+          this.showErrorModal('Erro ao enviar mensagem', 'Não foi possível enviar sua mensagem. Tente novamente mais tarde.');
+          this.isSubmitting = false;
         });
     }
   }
